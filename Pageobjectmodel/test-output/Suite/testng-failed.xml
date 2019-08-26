@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite guice-stage="DEVELOPMENT" name="Failed suite [Suite]">
+  <listeners>
+    <listener class-name="Framework.Listeners"/>
+    <listener class-name="Framework.ExtentReporterNG"/>
+  </listeners>
+  <test name="Test(failed)">
+    <classes>
+      <class name="Framework.FaceBokTest">
+        <methods>
+          <include name="TestFireFox" invocation-numbers="0 1"/>
+          <include name="tearDown"/>
+        </methods>
+      </class> <!-- Framework.FaceBokTest -->
+    </classes>
+  </test> <!-- Test(failed) -->
+</suite> <!-- Failed suite [Suite] -->

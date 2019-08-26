@@ -1,0 +1,333 @@
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+								PageObjectModel
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+PageObject Classes  Into the Main Folder
+
+
+Test Classes  Into The Test Folder
+
+
+Create Seprate Classes for LoginPage and TestLogin Page
+
+
+WebPages Are Represented  as  Classes and for Each Page Define The Classes  and  Respective TestClass To Test them
+
+
+
+
+Page Object Design Pattern
+
+
+
+Test Folder We write the:  Test Cases 
+
+Main Folder we write the : Object Repository
+
+
+
+
+We maintain Object Repository for each pages (Classes  are object repository
+
+You Get all  the objects from this classes
+
+Maintaining  page vise object repository
+
+
+
+
+Reduces Code Duplication and improves the code maintainability
+
+If there  is any change maintenence will be very less
+
+
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+								ObjectClass
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+Define all The Objects  Relevant to this page within This Class
+
+
+
+---------------------------------------------------------------------
+
+
+package Framework;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+
+public class loginpage
+	{
+				
+		
+		WebDriver driver;
+		  
+		  
+		  
+		  	// Define All  The Objects Belonging to This Page Only
+		    By username = By.id("email");
+		    By password= By.id("pass");
+		    By signin= By.id("loginbutton");
+		 
+		    
+		    
+		            
+
+		   // Basic Constructor That You Will Need To Write For All Your Page Object Classes
+		    
+		     public loginpage(WebDriver driver)
+		    	 {
+		 
+		    		 this.driver = driver;
+		 
+		    	 }
+		     
+		     
+		     
+		     	public void setUserid(String userid)
+		         {
+		        	driver.findElement(username).sendKeys(userid);
+		         }
+		         
+		     
+		         public void setPassword(String passwords)
+		         {
+		        	driver.findElement(password).sendKeys(passwords);
+		         }
+		         
+		         
+		         public void signin()
+		         {
+		        	driver.findElement(signin).click();
+		         }
+		         	     
+		     
+		     
+	}
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+								TestBase Class 
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+Opening The Browser 
+
+Invoking Selenium Should Be written into Seprate Class Called Test Base
+
+Take The Global Variable From the File Do Not Hard code It
+
+Rc On Main Package > new > Other > general > File >   global.properties
+
+
+Files with     .properties  Extension Can Be accessed with Properties Class
+
+
+Provide The Path Of The File  ("With Double \\")
+
+-------------------------------------------------------------------------------------------------------------------
+
+
+public class TestBase
+	{
+			
+		
+		public static WebDriver driver=null;
+		
+
+		public void setup() throws IOException
+		{
+			
+			Properties p=new Properties();
+			
+			FileInputStream fi=new FileInputStream("C:\\Apps\\Pageobjectmodel\\src\\main\\java\\Framework\\global.properties");
+			p.load(fi);
+			
+			// System.out.println(p.getProperty("browser"));
+			
+			if(p.getProperty("browser").contains("firefox"))
+			{
+				driver=new FirefoxDriver();
+			}
+			
+			else if (p.getProperty("browser").contains("chrome"))
+			{
+				// System.setProperty("webdriver.chrome.driver", value);
+				// System.setProperty("webdriver.chrome.driver","D:/Selenium-Drivers/ChromeDriver/chromedriver.exe");
+				driver=new ChromeDriver();
+			}
+			
+			else
+			{
+				// System.setProperty("webdriver.chrome.driver","D:/Selenium-Drivers/ChromeDriver/chromedriver.exe");
+				driver=new ChromeDriver();
+			}
+			
+			 driver.manage().window().maximize();
+			driver.get(p.getProperty("url"));
+			driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+			
+		}
+		
+		
+		
+		
+		
+		
+	}
+
+
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+								Test Class
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+For Every  new Test Class
+
+1) Extend The TestBase Class (Inheritence)	LoginTest2 extends TestBase
+
+2) Give References Where Required 
+
+		import Framework.loginpage;  
+	 	Framework.TestBase;
+
+
+
+
+
+
+
+
+3) Call The SetUp() Method First
+
+-----------------------------------------------
+
+
+package Framework;
+
+import static org.testng.Assert.assertEquals;
+
+import java.util.concurrent.TimeUnit;
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
+
+
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
+
+import Framework.loginpage;
+import Framework.TestBase;
+
+
+/*					
+ *   							LOGIN TEST USING GLOBAL ENVIRONMENT VARIABLE
+ * 
+ * 
+ * 
+ * 
+ * 								MUST MUST MUST
+ * 
+ * 		Before Running Any Test You MUST MUST  Add  The TestNG Library (To The Project) and testng.annotations 
+ * 		to the Class
+ * 
+ * 		Required For Running The Test
+ * 
+ * 		import Framework.loginpage;  Provide References Where  Required 
+	 	Framework.TestBase;
+
+ * 
+ * 
+ * */
+
+
+
+
+
+		public class LoginTest2 extends TestBase
+		{
+			
+			@AfterTest
+			public void Cleanup()
+				{
+					driver.quit();
+				}
+			
+
+			@Test
+			public void LoginApp() throws InterruptedException, IOException
+			{
+				// Create Object Of The Class  (Methods You want to access) here We  Need object of LoginPage 
+				// Creating Object Means Invoking the Constructor of that class
+				
+				// Will Initialize Driver & browser 
+					setup();
+				
+				 loginpage lp = new loginpage(driver);
+				 String title=driver.getTitle();
+				 System.out.println(title);
+				 
+				lp.setUserid("UserName");
+				lp.setPassword("Password");
+				lp.signin();
+				Thread.sleep(2000);
+				
+		
+				 
+				assertEquals(title,"Facebook - Log In or Sign Up");
+				Thread.sleep(2000);	
+				 
+			}
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+												/****** Helper Methods ******/
+			
+	}
+
+
+
+
+
+
+
+
